@@ -1,0 +1,59 @@
+{% load static %}
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Task Manager App</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="{% static 'assets/style.css' %}">
+    </head>
+    <body>
+        
+        <div class="content">
+            <section>
+                <header>
+                    <h2 class="text-center">Task App</h2>
+                    {% if messages %}
+                    <ul class="messages">
+                        {% for message in messages %}
+                        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                </header>
+                <form class="input-section" action="{% url 'task:add' %}" method="POST">
+                    {% csrf_token %}
+                    <input type="text" placeholder="Task Category" name="category" class=""/>
+                    <input type="text" placeholder="Task Detail" name="detail" class=""/>
+                    <button type="submit">+</button>
+                </form>
+                <div class="list-section">
+                    {% if task_list %}
+                        <ul>
+                        {% for task in task_list %}
+                            <li class="card {% if task.status == 'Complete' %}completed{% endif %}" id="task-{{ task.id }}">
+                                <div class="task-info">
+                                    <span><input type="checkbox" name="task-{{ task.id }}" class="status" {% if task.status == 'Complete' %}checked{% endif %}/> {{ task.detail }}  </span>
+                                    <span class="task-category">{{ task.category }}</span>
+                                </div>
+                                <span class="delete-button">X</span>
+                            </li>
+                        {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-center">No Task to be Done</p>
+                    {% endif %}
+                </div>
+    
+            </section>
+            
+            <section class="chart-section">
+                <div id="chartContainer" style="width: 100%; height: 360px;"></div>
+            </section>
+        </div>
+        <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+        <script src="{% static 'assets/script.js' %}"></script>
+    </body>
+</html>

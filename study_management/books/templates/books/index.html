@@ -1,0 +1,129 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Study Management</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="{% static 'books/script.js' %}"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+        <style>
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 200px;
+            height: 100%;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+
+        .sidebar a {
+            display: block;
+            padding: 10px;
+            margin-bottom: 5px;
+            color: #212529;
+        }
+
+        .sidebar a:hover {
+            background-color: #e9ecef;
+            text-decoration: none;
+        }
+    </style>
+    <style>
+        .progress-container {
+            width: 50%;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h3>Menu</h3>
+        <a href="#addBookMenu">Add Book</a>
+        <a href="#addNoteMenu">Add Note</a>
+        <a href="#addTagMenu">Add Tag</a>
+    </div>
+    <div class="container mt-5" style="margin-left: 240px;">
+        <h1>Books in Progress</h1>
+        <ol id="book-list" class="list-unstyled">
+            {% for book in books_in_progress %}
+                <li class="book-item mb-2" data-id="{{ book.id }}">
+                    <strong class="title">{{ book.title }}</strong> / <span class="author">{{ book.author }}</span> - Start date: <span class="start_date">{{ book.start_date }}</span> - Pages read: <span class="pages-read">{{ book.pages_read }}</span> / <span class="total_pages">{{ book.total_pages }}</span>
+                    <button class="increase-pages-btn" data-id="{{ book.id }}">+</button>
+                    <button class="decrease-pages-btn" data-id="{{ book.id }}">-</button>
+                    <button class="edit-btn" data-id="{{ book.id }}">Edit</button>
+                    {% with book.pages_read as value and book.total_pages as max %}
+                    <div class="progress mt-2" style="width: 50%;">
+                        <div class="progress-bar" role="progressbar" style="width: {% widthratio value max 100 %}%;" aria-valuenow="{% widthratio value max 100 %}" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    {% endwith %}
+                    <div class="edit-book-form-container" style="display:none;">
+                        <form class="edit-book-form">
+                            {% csrf_token %}
+                            {{ book_form.as_p }}
+                            <input type="hidden" name="book_id" class="book_id" value="{{ book.id }}">
+                            <button type="submit" class="btn btn-success">Save Changes</button>
+                            <button type="button" class="cancel-edit-btn btn btn-danger">Cancel</button>
+                        </form>
+                    </div>
+                </li>
+            {% endfor %}
+        </ol>
+        <h1>Completed Books</h1>
+        <ol class="list-unstyled">
+            {% for book in completed_books %}
+                <li class="book-item mb-2" data-id="{{ book.id }}">
+                    <strong>{{ book.title }}</strong> / {{ book.author }} - Pages read: <span class="pages-read">{{ book.pages_read }}</span> / {{ book.total_pages }}
+                    <button class="increase-pages-btn" data-id="{{ book.id }}">+</button>
+                    <button class="decrease-pages-btn" data-id="{{ book.id }}">-</button>
+                    <button class="edit-btn" data-id="{{ book.id }}">Edit</button>
+                    {% with book.pages_read as value and book.total_pages as max %}
+                    <div class="progress mt-2" style="width: 50%;">
+                        <div class="progress-bar" role="progressbar" style="width: {% widthratio value max 100 %}%;" aria-valuenow="{% widthratio value max 100 %}" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    {% endwith %}
+                </li>
+            {% endfor %}
+        </ol>
+
+        <!-- Add separate collapsible menu content for each section -->
+        <div class="collapse" id="addBookMenu">
+            <div class="card card-body">
+                <h2>Add Book</h2>
+                <form id="add-book-form">
+                    {% csrf_token %}
+                    {{ book_form.as_p }}
+                    <button type="submit" class="btn btn-primary">Add Book</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="collapse" id="addNoteMenu">
+            <div class="card card-body">
+                <h2>Add Note</h2>
+                <form id="add-note-form">
+                    {% csrf_token %}
+                    {{ note_form.as_p }}
+                    <button type="submit" class="btn btn-primary">Add Note</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="collapse" id="addTagMenu">
+            <div class="card card-body">
+                <h2>Add Tag</h2>
+                <form id="add-tag-form">
+                    {% csrf_token %}
+                    {{ tag_form.as_p }}
+                    <button type="submit" class="btn btn-primary">Add Tag</button>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>
